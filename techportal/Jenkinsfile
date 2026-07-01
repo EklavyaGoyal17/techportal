@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    environment {
+        IMAGE_NAME = 'techportal'
+        IMAGE_TAG = "v${env.BUILD_ID}"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
+            }
+        }
+        stage('Kubernetes Deploy') {
+            steps {
+                sh "sed -i 's|techportal:v1|${IMAGE_NAME}:${IMAGE_TAG}|g' k8s/deployment.yaml"
+                sh "kubectl apply -f k8s/deployment.yaml"
+                sh "kubectl apply -f k8s/service.yaml"
+            }
+        }
+    }
+}
