@@ -1,0 +1,12 @@
+define host {
+    use                     linux-server
+    host_name               techportal
+    address                 host.docker.internal
+}
+
+define service {
+    use                     generic-service
+    host_name               techportal
+    service_description     HTTP
+    check_command           check_http!-p 30081
+}
