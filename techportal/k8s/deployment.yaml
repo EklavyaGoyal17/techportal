@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: techportal-app
-        image: techportal:v1
-        imagePullPolicy: IfNotPresent
+        image: techportal:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8081
